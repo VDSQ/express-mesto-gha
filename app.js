@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 const router = require("./routes");
 
 const port = 3000;
@@ -14,12 +13,12 @@ async function main() {
 
   app.use((req, res, next) => {
     req.user = {
-      _id: "64594264e3f85f85c5a66920",
+      _id: "645a1f436690dee05572ba8a",
     };
 
     next();
   });
-  app.use(bodyParser.json());
+  app.use(express.json());
   app.use(router);
   app.listen(port);
 }

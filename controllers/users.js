@@ -1,8 +1,15 @@
+const http2 = require("http2");
+const mongoose = require("mongoose");
 const User = require("../models/user");
+
+const OK = http2.constants.HTTP_STATUS_OK;
+const CREATED = http2.constants.HTTP_STATUS_CREATED;
+const BAD_REQUEST = http2.constants.HTTP_STATUS_BAD_REQUEST;
+const NOT_FOUND = http2.constants.HTTP_STATUS_NOT_FOUND;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.status(OK).send(users))
     .catch(next);
 };
 
@@ -13,17 +20,15 @@ module.exports.getUserById = (req, res, next) => {
     .then((user) => {
       if (!user) {
         res
-          .status(404)
+          .status(NOT_FOUND)
           .send({ message: "Пользователь по указанному _id не найден." });
+      } else {
+        res.status(OK).send(user);
       }
-
-      console.log(1);
-
-      res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === "CastError" || error.name === "ValidationError") {
-        return res.status(400).send({
+      if (error instanceof mongoose.Error.CastError) {
+        return res.status(BAD_REQUEST).send({
           message: "Переданы некорректные данные при получении профиля.",
         });
       }
@@ -33,13 +38,21 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+  User.create({
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  })
+    .then((user) => res.status(CREATED).send(user))
     .catch((error) => {
-      if (error.name === "CastError" || error.name === "ValidationError") {
-        return res.status(400).send({
+      if (error instanceof mongoose.Error.ValidationError) {
+        return res.status(BAD_REQUEST).send({
           message: "Переданы некорректные данные при создании пользователя.",
         });
       }
@@ -48,56 +61,35 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUser = (req, res, next) => {
-  const { name, about } = req.body;
+function updateUser(req, res, next) {
   const userId = req.user._id;
+  const message = `Переданы некорректные данные при обновлении ${
+    req.originalUrl.includes("avatar") ? "аватара" : "профиля"
+  }.`;
 
-  User.findByIdAndUpdate(
-    userId,
-    { name, about },
-    { new: true, runValidators: true },
-  )
+  User.findByIdAndUpdate(userId, req.body, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         res
-          .status(404)
+          .status(NOT_FOUND)
           .send({ message: "Пользователь по указанному _id не найден." });
+      } else {
+        res.status(OK).send(user);
       }
-
-      res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === "CastError" || error.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные при обновлении профиля.",
-        });
+      if (error instanceof mongoose.Error.ValidationError) {
+        return res.status(BAD_REQUEST).send({ message });
       }
 
       return next(error);
     });
+}
+
+module.exports.updateProfile = (req, res, next) => {
+  updateUser(req, res, next);
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  const userId = req.user._id;
-
-  User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        res
-          .status(404)
-          .send({ message: "Пользователь по указанному _id не найден." });
-      }
-
-      res.status(200).send(user);
-    })
-    .catch((error) => {
-      if (error.name === "CastError" || error.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные при обновлении аватара.",
-        });
-      }
-
-      return next(error);
-    });
+  updateUser(req, res, next);
 };
