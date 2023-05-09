@@ -40,9 +40,19 @@ module.exports.deleteCard = (req, res, next) => {
         });
       }
 
-      Card.findByIdAndRemove(cardId).then(() => res.status(200).send({ message: "Карточка успешно удалена." }));
+      Card.findByIdAndRemove(cardId).then(() =>
+        res.status(200).send({ message: "Карточка успешно удалена." })
+      );
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === "CastError" || error.name === "ValidationError") {
+        return res.status(400).send({
+          message: "Переданы некорректные данные при удалении карточки.",
+        });
+      }
+
+      return next(error);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -52,7 +62,7 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: userId } },
-    { new: true },
+    { new: true }
   )
     .then((card) => {
       if (!card) {

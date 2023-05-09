@@ -17,9 +17,19 @@ module.exports.getUserById = (req, res, next) => {
           .send({ message: "Пользователь по указанному _id не найден." });
       }
 
+      console.log(1);
+
       res.status(200).send(user);
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === "CastError" || error.name === "ValidationError") {
+        return res.status(400).send({
+          message: "Переданы некорректные данные при получении профиля.",
+        });
+      }
+
+      return next(error);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -45,7 +55,7 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(
     userId,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => {
       if (!user) {
