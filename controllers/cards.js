@@ -40,9 +40,7 @@ module.exports.deleteCard = (req, res, next) => {
         });
       }
 
-      Card.findByIdAndRemove(cardId).then(() =>
-        res.status(200).send({ message: "Карточка успешно удалена." })
-      );
+      Card.findByIdAndRemove(cardId).then(() => res.status(200).send({ message: "Карточка успешно удалена." }));
     })
     .catch((error) => {
       if (error.name === "CastError" || error.name === "ValidationError") {
@@ -62,7 +60,7 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: userId } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
