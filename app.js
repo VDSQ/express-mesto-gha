@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+// eslint-disable-next-line import/no-unresolved
+const cookieParser = require("cookie-parser");
 const router = require("./routes");
 
 const port = 3000;
@@ -11,14 +13,8 @@ async function main() {
   mongoose.set("strictQuery", false);
   await mongoose.connect(mongoDB);
 
-  app.use((req, res, next) => {
-    req.user = {
-      _id: "645a1f436690dee05572ba8a",
-    };
-
-    next();
-  });
   app.use(express.json());
+  app.use(cookieParser());
   app.use(router);
   app.listen(port);
 }
