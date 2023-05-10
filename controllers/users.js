@@ -1,5 +1,5 @@
+/* eslint-disable import/no-unresolved */
 const http2 = require("http2");
-// eslint-disable-next-line import/no-unresolved
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const UnauthorizedError = require("../errors/UnauthorizedError");
@@ -43,7 +43,12 @@ module.exports.login = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   User.create(req.body)
-    .then((user) => res.status(CREATED).send(user))
+    .then((user) => res.status(CREATED).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch(next);
 };
 
