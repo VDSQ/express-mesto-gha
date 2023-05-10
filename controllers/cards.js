@@ -41,15 +41,14 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, res, next) => {
+function changeLikeCard(req, res, next, isLike) {
   const { cardId } = req.params;
   const userId = req.user._id;
+  const query = isLike
+    ? { $addToSet: { likes: userId } }
+    : { $pull: { likes: userId } };
 
-  Card.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: userId } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(cardId, query, { new: true })
     .then((card) => {
       if (!card) {
         next(new NotFoundError("Карточка с указанным _id не найдена."));
@@ -58,19 +57,12 @@ module.exports.likeCard = (req, res, next) => {
       }
     })
     .catch(next);
+}
+
+module.exports.likeCard = (req, res, next) => {
+  changeLikeCard(req, res, next, true);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
-  const { cardId } = req.params;
-  const userId = req.user._id;
-
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        next(new NotFoundError("Карточка с указанным _id не найдена."));
-      } else {
-        res.status(OK).send(card);
-      }
-    })
-    .catch(next);
+  changeLikeCard(req, res, next, false);
 };
