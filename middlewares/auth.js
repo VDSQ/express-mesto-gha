@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 const jwt = require("jsonwebtoken");
-const UnauthorizedError = require("../errors/unauthorized");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;

@@ -1,5 +1,5 @@
 const signInRoutes = require("express").Router();
-const { login } = require("../controllers/auth");
+const { login } = require("../controllers/users");
 const { validateSignIn } = require("../middlewares/validator");
 
 signInRoutes.post("/", validateSignIn, login);

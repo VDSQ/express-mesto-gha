@@ -1,9 +1,7 @@
 const http2 = require("http2");
-const mongoose = require("mongoose");
 const Card = require("../models/card");
-const BadRequestError = require("../errors/bad-request");
-const ForbiddenError = require("../errors/forbidden");
-const NotFoundError = require("../errors/not-found");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError");
 
 const OK = http2.constants.HTTP_STATUS_OK;
 const CREATED = http2.constants.HTTP_STATUS_CREATED;
@@ -20,13 +18,7 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.status(CREATED).send(card))
-    .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError("Переданы некорректные данные при создании карточки."));
-      } else {
-        next(error);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -46,13 +38,7 @@ module.exports.deleteCard = (req, res, next) => {
           .catch(next);
       }
     })
-    .catch((error) => {
-      if (error instanceof mongoose.Error.CastError) {
-        next(new BadRequestError("Переданы некорректные данные при удалении карточки."));
-      } else {
-        next(error);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -71,13 +57,7 @@ module.exports.likeCard = (req, res, next) => {
         res.status(OK).send(card);
       }
     })
-    .catch((error) => {
-      if (error instanceof mongoose.Error.CastError) {
-        next(new BadRequestError("Переданы некорректные данные при поставки лайка."));
-      } else {
-        next(error);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -92,11 +72,5 @@ module.exports.dislikeCard = (req, res, next) => {
         res.status(OK).send(card);
       }
     })
-    .catch((error) => {
-      if (error.name === "CastError") {
-        next(new BadRequestError("Переданы некорректные данные при снятии лайка."));
-      } else {
-        next(error);
-      }
-    });
+    .catch(next);
 };

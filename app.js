@@ -1,8 +1,10 @@
+/* eslint-disable import/no-unresolved */
 const express = require("express");
 const mongoose = require("mongoose");
-// eslint-disable-next-line import/no-unresolved
 const cookieParser = require("cookie-parser");
+const { errors } = require("celebrate");
 const router = require("./routes");
+const errorHandler = require("./utils/errorHandler");
 
 const port = 3000;
 const mongoDB = "mongodb://127.0.0.1/mestodb";
@@ -16,6 +18,8 @@ async function main() {
   app.use(express.json());
   app.use(cookieParser());
   app.use(router);
+  app.use(errors());
+  app.use(errorHandler);
   app.listen(port);
 }
 
