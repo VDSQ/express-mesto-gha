@@ -1,10 +1,10 @@
-const http2 = require("http2");
 const Card = require("../models/card");
 const ForbiddenError = require("../errors/ForbiddenError");
 const NotFoundError = require("../errors/NotFoundError");
-
-const OK = http2.constants.HTTP_STATUS_OK;
-const CREATED = http2.constants.HTTP_STATUS_CREATED;
+const {
+  OK,
+  CREATED,
+} = require("../utils/statusCode");
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -28,15 +28,17 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError("Карточка с указанным _id не найдена."));
-      } else if (card.owner.toString() !== userId) {
-        next(new ForbiddenError("Вы не можете удалить карточку другого пользователя."));
-      } else {
-        card
-          .deleteOne()
-          .then(() => res.status(OK).send({ message: "Карточка успешно удалена." }))
-          .catch(next);
+        return next(new NotFoundError("Карточка с указанным _id не найдена."));
       }
+
+      if (card.owner.toString() !== userId) {
+        return next(new ForbiddenError("Вы не можете удалить карточку другого пользователя."));
+      }
+
+      return card
+        .deleteOne()
+        .then(() => res.status(OK).send({ message: "Карточка успешно удалена." }))
+        .catch(next);
     })
     .catch(next);
 };
@@ -51,10 +53,10 @@ function changeLikeCard(req, res, next, isLike) {
   Card.findByIdAndUpdate(cardId, query, { new: true })
     .then((card) => {
       if (!card) {
-        next(new NotFoundError("Карточка с указанным _id не найдена."));
-      } else {
-        res.status(OK).send(card);
+        return next(new NotFoundError("Карточка с указанным _id не найдена."));
       }
+
+      return res.status(OK).send(card);
     })
     .catch(next);
 }
