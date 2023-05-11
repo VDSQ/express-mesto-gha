@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 const { celebrate, Joi, Segments } = require("celebrate");
 const validator = require("validator");
 const { ObjectId } = require("mongoose").Types;
