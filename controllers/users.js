@@ -106,8 +106,8 @@ module.exports.getUserById = (req, res, next) => {
   getUser(req, res, next, userId);
 };
 
-function updateUser(req, res, next, query) {
-  User.findByIdAndUpdate(req.user._id, query, {
+function updateUser(req, res, next, userId, query) {
+  User.findByIdAndUpdate(userId, query, {
     new: true,
     runValidators: true,
   })
@@ -123,10 +123,10 @@ function updateUser(req, res, next, query) {
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-  updateUser(req, res, next, { name, about });
+  updateUser(req, res, next, req.user._id, { name, about });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  updateUser(req, res, next, { avatar });
+  updateUser(req, res, next, req.user._id, { avatar });
 };
