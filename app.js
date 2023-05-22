@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { errors } = require("celebrate");
+const { cors } = require("cors");
 const router = require("./routes");
 const errorHandler = require("./utils/errorHandler");
 
@@ -13,6 +14,14 @@ async function main() {
   mongoose.set("strictQuery", false);
   await mongoose.connect(MONGO_DB);
 
+  app.use(
+    cors({
+      origin: ["https://mesto-example.nomoredomains.monster/sign-in"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      preflightContinue: false,
+      credentials: true,
+    }),
+  );
   app.use(express.json());
   app.use(cookieParser());
   app.use(router);

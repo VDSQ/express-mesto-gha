@@ -5,11 +5,9 @@ const usersRouter = require("./users");
 const cardsRouter = require("./cards");
 const auth = require("../middlewares/auth");
 const { requestLogger, errorLogger } = require("../middlewares/logger");
-const { cors } = require("../middlewares/cors");
 const NotFoundError = require("../errors/NotFoundError");
 
 router.use(requestLogger);
-router.use(cors);
 router.use("/crash-test", () => {
   setTimeout(() => {
     throw new Error("Сервер сейчас упадет.");
