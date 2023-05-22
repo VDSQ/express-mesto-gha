@@ -10,9 +10,9 @@ const NotFoundError = require("../errors/NotFoundError");
 
 router.use(requestLogger);
 router.use(cors);
-router.use("/crash-test", () => {
+router.get("/crash-test", () => {
   setTimeout(() => {
-    throw new Error("Сервер сейчас упадет.");
+    throw new Error("Сервер сейчас упадёт.");
   }, 0);
 });
 router.use("/signin", signInRouter);
