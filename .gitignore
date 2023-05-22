@@ -3,11 +3,11 @@ logs
 *.log
 npm-debug.log*
 
-# Dependency directory
-node_modules
-
 # Optional npm cache directory
 .npm
+
+# Dependency directory
+node_modules
 
 # Optional REPL history
 .DS_Store
