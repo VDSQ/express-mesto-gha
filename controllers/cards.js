@@ -8,6 +8,7 @@ const {
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
+    .sort({ createdAt: -1 })
     .then((cards) => res.status(OK).send(cards))
     .catch(next);
 };

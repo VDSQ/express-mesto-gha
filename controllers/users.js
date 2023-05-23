@@ -6,7 +6,7 @@ const UnauthorizedError = require("../errors/UnauthorizedError");
 const NotFoundError = require("../errors/NotFoundError");
 const { OK, CREATED } = require("../utils/statusCode");
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { NODE_ENV = "development", JWT_SECRET } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -38,7 +38,7 @@ module.exports.login = (req, res, next) => {
             .cookie("jwt", token, {
               maxAge: 60 * 60 * 24 * 30,
               httpOnly: true,
-              sameSite: true,
+              sameSite: false,
               secure: false,
             })
             .status(OK)

@@ -1,15 +1,4 @@
-const allowedCors = [
-  "https://mesto-example.nomoredomains.monster",
-  "http://mesto-example.nomoredomains.monster",
-  "https://api.mesto-example.nomoredomains.monster",
-  "http://api.mesto-example.nomoredomains.monster",
-  "localhost:3000",
-  "http://localhost:3000",
-  "https://localhost:3000",
-  "localhost:3001",
-  "http://localhost:3001",
-  "https://localhost:3001",
-];
+const allowedCors = ["https://mesto-example.nomoredomains.monster"];
 
 const DEFAULT_ALLOWED_METHODS = "GET, HEAD, PUT, PATCH, POST, DELETE";
 
