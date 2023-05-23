@@ -42,7 +42,7 @@ module.exports.login = (req, res, next) => {
               secure: false,
             })
             .status(OK)
-            .send({ message: "Вы успешно авторизовались!" });
+            .send({ message: "Вы успешно авторизовались!", token });
         },
       );
     })
