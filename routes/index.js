@@ -20,9 +20,9 @@ router.use("/signup", signUpRouter);
 router.use(auth);
 router.use("/users", usersRouter);
 router.use("/cards", cardsRouter);
-router.use(errorLogger);
 router.use((req, res, next) => {
   next(new NotFoundError("Такая страница не существует."));
 });
+router.use(errorLogger);
 
 module.exports = router;
